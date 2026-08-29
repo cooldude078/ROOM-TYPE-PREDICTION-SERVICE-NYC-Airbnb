@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NYC Listing Predictor — Room Type Arrivals Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="tunnelCanvas" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-bullet" aria-hidden="true">●</span>
+    <span class="brand-text">NYC LISTING PREDICTOR</span>
+  </div>
+  <div class="status-line">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">SYSTEM ONLINE</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <p class="eyebrow">ROOM&nbsp;TYPE&nbsp;PREDICTION&nbsp;SERVICE — ALL&nbsp;BOROUGHS</p>
+    <h1>WHERE DOES YOUR<br><span class="accent" id="heroAccent">LISTING</span> BELONG?</h1>
+    <p class="sub">Feed in the stats on any listing and the model reads it like a conductor reads a manifest — Entire&nbsp;home/apt, Private&nbsp;room, or Shared&nbsp;room — before a single guest ever checks in.</p>
+
+    <nav class="route-indicator" id="routeIndicator" aria-label="Form sections">
+      <div class="route-line"><div class="route-line-fill" id="routeFill"></div></div>
+      <ol>
+        <li data-stop="location" class="stop active">
+          <span class="stop-dot"></span><span class="stop-label">LOCATION</span>
+        </li>
+        <li data-stop="pricing" class="stop">
+          <span class="stop-dot"></span><span class="stop-label">PRICING</span>
+        </li>
+        <li data-stop="reviews" class="stop">
+          <span class="stop-dot"></span><span class="stop-label">REVIEWS</span>
+        </li>
+        <li data-stop="availability" class="stop">
+          <span class="stop-dot"></span><span class="stop-label">AVAILABILITY</span>
+        </li>
+        <li data-stop="predict" class="stop">
+          <span class="stop-dot"></span><span class="stop-label">PREDICT</span>
+        </li>
+      </ol>
+    </nav>
+
+    <a href="#form" class="cta">BOARD NOW<span class="cta-arrow">↓</span></a>
+  </section>
+
+  <!-- ============ FORM PANEL ============ -->
+  <section class="panel" id="form">
+    <div class="panel-head">
+      <span class="panel-tag">LIVE ENTRY BOARD</span>
+      <h2>Listing Details</h2>
+    </div>
+
+    <form id="predictForm" novalidate>
+
+      <fieldset id="fs-location" data-stop="location">
+        <legend>Location</legend>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="neighbourhood_group">Borough</label>
+            <div class="select-wrap">
+              <span class="select-dot" id="boroughDot"></span>
+              <select id="neighbourhood_group" name="neighbourhood_group" required>
+                <option value="" disabled selected>Choose a borough</option>
+                <option value="Manhattan">Manhattan</option>
+                <option value="Brooklyn">Brooklyn</option>
+                <option value="Queens">Queens</option>
+                <option value="Bronx">Bronx</option>
+                <option value="Staten Island">Staten Island</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="neighbourhood">Neighbourhood</label>
+            <input type="text" id="neighbourhood" name="neighbourhood" list="neighbourhoodList" placeholder="e.g. Williamsburg" required autocomplete="off">
+            <datalist id="neighbourhoodList"></datalist>
+          </div>
+        </div>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="latitude">Latitude</label>
+            <input type="number" id="latitude" name="latitude" step="any" min="-90" max="90" placeholder="40.7128" required>
+          </div>
+          <div class="field">
+            <label for="longitude">Longitude</label>
+            <input type="number" id="longitude" name="longitude" step="any" min="-180" max="180" placeholder="-74.0060" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset id="fs-pricing" data-stop="pricing">
+        <legend>Pricing &amp; Stay</legend>
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="price">Price per night (USD)</label>
+            <input type="number" id="price" name="price" min="1" step="1" placeholder="150" required>
+          </div>
+          <div class="field">
+            <label for="minimum_nights">Minimum nights</label>
+            <input type="number" id="minimum_nights" name="minimum_nights" min="1" max="365" step="1" placeholder="3" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset id="fs-reviews" data-stop="reviews">
+        <legend>Reviews &amp; Host</legend>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="number_of_reviews">Total reviews</label>
+            <input type="number" id="number_of_reviews" name="number_of_reviews" min="0" step="1" placeholder="24" required>
+          </div>
+          <div class="field">
+            <label for="reviews_per_month">Reviews / month</label>
+            <input type="number" id="reviews_per_month" name="reviews_per_month" min="0" step="0.01" placeholder="1.2" required>
+          </div>
+          <div class="field">
+            <label for="calculated_host_listings_count">Host's total listings</label>
+            <input type="number" id="calculated_host_listings_count" name="calculated_host_listings_count" min="0" step="1" placeholder="1" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset id="fs-availability" data-stop="availability">
+        <legend>Availability</legend>
+        <div class="field">
+          <label for="availability_365">Days available out of 365 — <span id="availabilityVal">180</span></label>
+          <input type="range" id="availability_365" name="availability_365" min="0" max="365" step="1" value="180">
+        </div>
+      </fieldset>
+
+      <button type="submit" class="submit-btn" id="submitBtn" data-stop="predict">
+        <span class="submit-label">PREDICT ROOM TYPE</span>
+        <span class="submit-spinner" aria-hidden="true"></span>
+      </button>
+
+      <p class="error-msg" id="errorMsg" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <!-- ============ RESULT / ARRIVALS BOARD ============ -->
+  <section class="result" id="resultSection" hidden>
+    <div class="panel-head">
+      <span class="panel-tag">ARRIVALS</span>
+      <h2>Prediction</h2>
+    </div>
+
+    <div class="board-frame">
+      <div class="board-row-label">ROOM&nbsp;TYPE</div>
+      <div class="flipboard" id="flipboard" aria-live="polite"></div>
+    </div>
+
+    <div class="confidence-block">
+      <p class="confidence-label">MODEL CONFIDENCE</p>
+      <div class="confidence-track">
+        <div class="confidence-fill" id="confidenceFill"></div>
+      </div>
+      <p class="confidence-value" id="confidenceValue">—</p>
+    </div>
+
+    <div class="proba-bars" id="probaBars"></div>
+
+    <button class="reset-btn" id="resetBtn" type="button">RUN ANOTHER LISTING</button>
+  </section>
+
+</main>
+
+<footer>
+  <p>Serves predictions from a local FastAPI endpoint. Set the request URL in <code>script.js</code> → <code>CONFIG.API_URL</code>.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
