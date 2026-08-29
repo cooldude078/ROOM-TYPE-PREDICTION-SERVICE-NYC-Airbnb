@@ -2,7 +2,7 @@
    CONFIG — point this at your running FastAPI server
    ========================================================= */
 const CONFIG = {
-  API_URL: "http://127.0.0.1:8000/predict",
+  API_URL: "http://127.0.0.1:8000/predichttps://room-type-prediction-service-nyc-airbnb.onrender.com",
 };
 
 /* =========================================================
