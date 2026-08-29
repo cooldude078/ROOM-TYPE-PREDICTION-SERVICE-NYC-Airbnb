@@ -2,7 +2,7 @@
    CONFIG — point this at your running FastAPI server
    ========================================================= */
 const CONFIG = {
-  API_URL: https://room-type-prediction-service-nyc-airbnb.onrender.com,
+  API_URL: "https://room-type-prediction-service-nyc-airbnb.onrender.com",
 };
 
 /* =========================================================
